@@ -164,12 +164,6 @@ for item in os.listdir(current_folder):
 print("Completed unzipping and renaming all valid .zip files.")
 ```
 
-To run this unzip script, execute the following command in the terminal:
-
-```bash
-python3 unzip_and_rename.py
-```
-
 ### Converting XML to CSV
 
 After downloading and extracting the `.zip` files, you can convert the XML files to CSV format using the following Python script:
