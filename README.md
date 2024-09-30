@@ -1,87 +1,92 @@
+# Zefania Bibles XML to CSV Preservation
 
-# Zefania-Bibles-XML2CSV-Preservation
+This repository provides tools for converting XML files of Zefania Bible translations into CSV format. It includes functionality to discover ZIP files of Bible translations from the Zefania SourceForge project, download them, and extract the XML files for further processing.
 
-This repository contains Python scripts to process Zefania XML Bible files, converting them into CSV format, while also unzipping files downloaded from SourceForge and renaming them by URL-decoding the filenames.
+## Description
 
-## Features
+The main purpose of this project is to convert XML Bible files into a CSV format that is compatible with the [OBS Studio Bible Dock Plugin](https://github.com/ManolisMariakakis/bible-dock-plugin). This conversion ensures that Bible texts can be easily integrated into the plugin. The XML files are originally hosted on SourceForge and are downloaded as ZIP archives.
 
-1. **Download**: Retrieve XML Bible files from SourceForge using `curl`.
-2. **Unzipping**: Extract all `.zip` files in the current directory and rename them by URL-decoding the filenames.
-3. **Conversion**: Convert Zefania XML Bible files to CSV format, stripping unwanted characters from verse text.
-4. **Preservation**: Original XML files are copied into the `csv/` directory after conversion.
-5. **Error Handling**: Handles potential file parsing and file not found errors for both `.zip` and XML files.
+## Requirements
 
-## Prerequisites
-
-- `curl`: For downloading the `.zip` files from SourceForge.
-- `python`: The scripts are written in Python, so make sure Python 3 is installed.
+- Python 3.x
+- Required libraries:
+  - `xml.etree.ElementTree` (part of Python's standard library)
+  - `csv` (part of Python's standard library)
+  - `os` (part of Python's standard library)
+  - `shutil` (part of Python's standard library)
+  - `beautifulsoup4` (install via pip)
 
 ## How to Use
 
-### 1. Clone the Repository
+### Downloading the ZIP Files
 
-```bash
-git clone https://github.com/ManolisMariakakis/Zefania-Bibles-XML2CSV-Preservation.git
-cd Zefania-Bibles-XML2CSV-Preservation
-```
+To obtain the `.zip` files for the Zefania Bible XML files, follow these steps:
 
-### 2. Download XML Bible Files
+1. **Download the Activity Page**:
+   - Visit the [SourceForge Zefania Sharp Activity Page](https://sourceforge.net/p/zefania-sharp/activity/) and save the page as an HTML file. Ensure to capture enough entries to find the desired `.zip` links.
 
-You can download Bible files from SourceForge using `curl`. For example:
+2. **Process the HTML File**:
+   - Use the provided Python script to extract the download links from the saved HTML file. This script utilizes Tkinter for file selection and BeautifulSoup for HTML parsing.
 
-```bash
-curl -L -O https://sourceforge.net/projects/zefania-sharp/files/Bibles/English/eng-kjv2006.zip/download
-```
+   Here's the code used to extract the links:
 
-This will download the file as `eng-kjv2006.zip`.
+   ```python
+   from tkinter import Tk
+   from tkinter import filedialog
+   from bs4 import BeautifulSoup
 
-### 3. Run the Unzip Script
+   # Create a Tkinter root window (it won't be shown)
+   root = Tk()
+   root.withdraw()  # Hide the root window
 
-Once you’ve downloaded the `.zip` files, you can run the provided unzip script, which will extract the files and rename them with URL-decoded filenames.
+   # Open a file dialog and allow the user to select a text file
+   file_path = filedialog.askopenfilename(
+       title="Select an HTML file", 
+       filetypes=(("Text Files", "*.txt"), ("HTML Files", "*.html"), ("All Files", "*.*"))
+   )
 
-```bash
-python3 unzip_and_rename.py
-```
+   # Check if the user selected a file
+   if file_path:
+       # Read the selected file
+       with open(file_path, 'r', encoding='utf-8') as file:
+           html_content = file.read()
 
-#### What the Script Does:
-- Extracts all `.zip` files in the current folder.
-- Renames the original `.zip` files by URL-decoding any encoded characters (e.g., `%20` to spaces).
-  
-### 4. Run the XML to CSV Conversion Script
+       # Parse the HTML using BeautifulSoup
+       soup = BeautifulSoup(html_content, 'html.parser')
 
-After extracting the XML files, run the conversion script to convert the XML files to CSV:
+       # Find all <a> tags inside <h1> within <li> elements
+       links = soup.select('.timeline li h1 a')
 
-```bash
-python3 xml_to_csv.py
-```
+       # Extract the href attributes that end with .zip/download and start with the specified URL
+       zip_download_links = [
+           link['href'] for link in links 
+           if link['href'].endswith('.zip/download') and link['href'].startswith('http://sourceforge.net/projects/zefania-sharp/files/Bibles')
+       ]
 
-#### What the Script Does:
-- Converts all `.xml` files in the current folder to `.csv`.
-- Saves the generated CSV files in a `csv/` folder.
-- Copies the original XML files into the `csv/` folder for preservation.
+       # Write the extracted links to result.txt
+       with open('result.txt', 'w', encoding='utf-8') as result_file:
+           for link in zip_download_links:
+               result_file.write(link + '\n')
 
-### 5. CSV Structure
+       print("Links have been written to result.txt.")
+   else:
+       print("No file selected.")
+   ```
 
-The CSV files generated from XML have the following columns:
+3. **Run the Script**:
+   - Execute the script in your Python environment. It will prompt you to select the saved HTML file. Once processed, the script will write all valid `.zip` download links to a file named `result.txt`.
 
-- **Book Number**: Numeric value representing the book number in the Bible.
-- **Chapter Number**: Numeric value representing the chapter number within the book.
-- **Verse Number**: Numeric value representing the verse number within the chapter.
-- **Verse Text**: The actual text of the verse, enclosed in double quotes, and with any quotes within the verse removed.
+4. **Download the ZIP Files**:
+   - Use the links found in `result.txt` to download the `.zip` files using `curl`. Here’s an example of how to use `curl` in the command line:
 
-Example CSV output:
+   ```bash
+   curl -L -o SF_2009-01-20_AFR_AFR3353_%281933_1953%20AFRIKAANS%20BYBEL%29.zip https://sourceforge.net/projects/zefania-sharp/files/Bibles/AFR/1933/1953%20Afrikaans%20Bybel/SF_2009-01-20_AFR_AFR3353_%281933_1953%20AFRIKAANS%20BYBEL%29.zip/download
+   ```
+   Replace `<URL>` with the actual link from `result.txt`. You can run this command for each link.
 
-```csv
-Book Number,Chapter,Verse Number,Verse Text
-1,1,1,"In the beginning, God created the heavens and the earth."
-1,1,2,"Now the earth was formless and empty, darkness was over the surface of the deep..."
-```
+### Unzipping the ZIP Files
 
-## Python Scripts Overview
-
-### Unzip and Rename Script (`unzip_and_rename.py`)
-
-This script processes all `.zip` files in the current directory, extracts their contents, and renames the original `.zip` files by URL-decoding the filenames.
+Once you have downloaded the `.zip` files, you can unzip all ZIP files in the folder using the following Python script:
 
 ```python
 import os
@@ -90,13 +95,10 @@ import urllib.parse
 
 # Function to URL-decode the filename
 def decrypt_url(filename):
-    # Strip the ".zip" extension before decoding
     base_name = filename.replace('.zip', '')
-    # Decode the URL-encoded parts of the filename
     decrypted_url = urllib.parse.unquote(base_name)
     return decrypted_url
 
-# Get the current folder
 current_folder = os.getcwd()
 
 # Iterate through all the files in the folder
@@ -107,7 +109,6 @@ for item in os.listdir(current_folder):
         try:
             # Unzip the file
             with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                # Extract all the contents to the current folder
                 zip_ref.extractall(current_folder)
             print(f'Unzipped: {item}')
             
@@ -127,9 +128,15 @@ for item in os.listdir(current_folder):
 print("Completed unzipping and renaming all valid .zip files.")
 ```
 
-### XML to CSV Conversion Script (`xml_to_csv.py`)
+To run this unzip script, execute the following command in the terminal:
 
-This script converts Zefania XML Bible files to CSV format, extracting the book, chapter, and verse details.
+```bash
+python3 unzip_and_rename.py
+```
+
+### Converting XML to CSV
+
+After downloading and extracting the `.zip` files, you can convert the XML files to CSV format using the following Python script:
 
 ```python
 import xml.etree.ElementTree as ET
@@ -167,8 +174,7 @@ def convert_xml_to_csv(xml_path, csv_path):
                     verse_text = verse.text.strip().replace('"', '') if verse.text else ''
                     
                     # Create the formatted string for the current row
-                    formatted_row = f'{book_number},{chapter_number},{verse_number},"{verse_text}"
-'
+                    formatted_row = f'{book_number},{chapter_number},{verse_number},"{verse_text}"\n'
                     
                     # Write the formatted row string directly to the file
                     file.write(formatted_row)
@@ -200,6 +206,3 @@ def process_all_xml_files_in_folder():
 process_all_xml_files_in_folder()
 ```
 
-## License
-
-This project is licensed under the GNU General Public License v3.0. See the `LICENSE` file for more details.
