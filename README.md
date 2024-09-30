@@ -8,13 +8,10 @@ The main purpose of this project is to convert XML Bible files into a CSV format
 
 ## Requirements
 
-- Python 3.x
-- Required libraries:
-  - `xml.etree.ElementTree` (part of Python's standard library)
-  - `csv` (part of Python's standard library)
-  - `os` (part of Python's standard library)
-  - `shutil` (part of Python's standard library)
-  - `beautifulsoup4` (install via pip)
+- **Python** (version 3.6 or higher)
+- **Required Libraries**:
+  - `BeautifulSoup4`
+  - `pandas`
 
 ## How to Use
 
@@ -235,4 +232,13 @@ def process_all_xml_files_in_folder():
 # Process all XML files in the current folder
 process_all_xml_files_in_folder()
 ```
+
+### Scripts
+
+The following scripts are included for the conversion process:
+
+1. **1-get-links.py**: Retrieves download links for the XML files.
+2. **2-prepare-curl.py**: Prepares the curl command to download the files.
+3. **3-unzip-and-rename.py**: Unzips the downloaded files and renames them appropriately.
+4. **4-xml2csv.py**: Converts the XML files to CSV format.
 
