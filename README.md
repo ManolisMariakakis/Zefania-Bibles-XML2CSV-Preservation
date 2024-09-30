@@ -76,15 +76,7 @@ To obtain the `.zip` files for the Zefania Bible XML files, follow these steps:
 3. **Run the Script**:
    - Execute the script in your Python environment. It will prompt you to select the saved HTML file. Once processed, the script will write all valid `.zip` download links to a file named `result.txt`.
 
-4. **Download the ZIP Files**:
-   - Use the links found in `result.txt` to download the `.zip` files using `curl`. Here’s an example of how to use `curl` in the command line:
-
-   ```bash
-   curl -L -o SF_2009-01-20_AFR_AFR3353_%281933_1953%20AFRIKAANS%20BYBEL%29.zip https://sourceforge.net/projects/zefania-sharp/files/Bibles/AFR/1933/1953%20Afrikaans%20Bybel/SF_2009-01-20_AFR_AFR3353_%281933_1953%20AFRIKAANS%20BYBEL%29.zip/download
-   ```
-   Replace `<URL>` with the actual link from `result.txt`. You can run this command for each link.
-
-## Generating Curl Commands
+### Generating Curl Commands
 
 To prepare curl commands for downloading ZIP files, you can use the following script. This script reads URLs from a file, generates curl commands for each URL, and saves the commands to an output file.
 
@@ -124,7 +116,9 @@ output_file = 'result_curl.txt'
 process_file(input_file, output_file)
 
 print(f'Curl commands written to {output_file}.')
+```
 
+This script takes a list of URLs from `result.txt`, generates a curl command for each, and saves them in `result_curl.txt`.
 
 ### Unzipping the ZIP Files
 
