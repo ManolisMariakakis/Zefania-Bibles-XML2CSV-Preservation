@@ -1,6 +1,6 @@
 # Zefania Bibles XML to CSV Preservation
 
-This repository provides tools for converting XML files of Zefania Bible translations into CSV format. It includes functionality to discover ZIP files of Bible translations from the Zefania SourceForge project, download them, and extract the XML files for further processing.
+This repository provides tools for converting XML files of [Zefania Bible translations](https://sourceforge.net/p/zefania-sharp/) into CSV format. It includes functionality to discover ZIP files of Bible translations from the Zefania SourceForge project, download them, and extract the XML files for further processing.
 
 ## Description
 
